@@ -3,7 +3,9 @@ import Button from "./Button";
 const Groceries = ({ groceries, handleEdit, handleDelete }) => {
   return (
     <div>
-    {groceries?.length < 1 && <p className="text-red-500 text-center text-lg">No groceries found</p>}
+      {groceries?.length < 1 && (
+        <p className="text-red-500 text-center text-lg">No groceries found</p>
+      )}
       <div className="overflow-y-auto my-4">
         <table className="w-full border whitespace-nowrap border-neutral-500 bg-text">
           <thead>
