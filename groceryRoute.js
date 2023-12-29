@@ -3,6 +3,7 @@ import {
   addCategory,
   addGrocery,
   deleteGrocery,
+  editCategory,
   getAllCategories,
   getAllGroceries,
   updateGrocery,
@@ -10,7 +11,11 @@ import {
 const router = express.Router();
 
 router.route("/").post(addGrocery).get(getAllGroceries);
+router
+  .route("/category")
+  .post(addCategory)
+  .get(getAllCategories)
+  .put(editCategory);
 router.route("/:id").put(updateGrocery).delete(deleteGrocery);
-router.route("/category").post(addCategory).get(getAllCategories);
 
 export default router;

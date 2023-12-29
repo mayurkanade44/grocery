@@ -59,8 +59,10 @@ export const getAllGroceries = async (req, res) => {
         groceries.push({
           _id: grocery._id,
           name: grocery.name,
-          price,
+          originalPrice: grocery.price,
+          discountedPrice: price,
           quantity: grocery.quantity,
+          category: grocery.category._id,
         });
       }
     }
@@ -116,6 +118,29 @@ export const getAllCategories = async (req, res) => {
     const categories = await Category.find();
 
     res.json(categories);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Server error, try again later" });
+  }
+};
+
+export const editCategory = async (req, res) => {
+  const { name, discount, id } = req.body;
+  try {
+    if (!name || !discount) {
+      return res.status(400).json({ msg: "Please required fields" });
+    }
+
+    const category = await Category.findById(id);
+    if (!category) return res.status(400).json({ msg: "category not found" });
+
+    category.name = name;
+    category.discount = discount;
+
+    await category.save();
+
+    const categories = await Category.find(); ///in real world app you shouldn't fetch data in post request
+    return res.json(categories);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error, try again later" });

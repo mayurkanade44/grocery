@@ -14,7 +14,7 @@ const Groceries = ({ groceries, handleEdit, handleDelete }) => {
                 Name
               </th>
               <th className="font-bold text-center border-neutral-500 border-2 px-3">
-                Price
+                Discounted Price
               </th>
               <th className="font-bold text-center border-neutral-500 border-2 px-3">
                 Quantity
@@ -34,7 +34,7 @@ const Groceries = ({ groceries, handleEdit, handleDelete }) => {
                   {grocery.name}
                 </td>
                 <td className="px-3 border-r text-center border-neutral-500">
-                  {grocery.price}
+                  {grocery.discountedPrice}
                 </td>
                 <td className="px-3 border-r text-center border-neutral-500">
                   {grocery.quantity}

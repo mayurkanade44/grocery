@@ -14,7 +14,11 @@ function App() {
     quantity: "",
     category: "Select",
   });
-  const [categoryForm, setCategoryForm] = useState({ name: "", discount: "" });
+  const [categoryForm, setCategoryForm] = useState({
+    name: "",
+    discount: "",
+    id: "",
+  });
   const [edit, setEdit] = useState({ status: false, id: "" });
   const [isLoading, setLoading] = useState(false);
   const [groceries, setGroceries] = useState([]);
@@ -37,7 +41,6 @@ function App() {
     setLoading(true);
     try {
       const res = await axios.get("/api/grocery/category");
-      console.log(res.data);
       setCategories(res.data);
       setLoading(false);
     } catch (error) {
@@ -50,12 +53,18 @@ function App() {
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    let res;
     try {
-      const res = await axios.post("/api/grocery/category", categoryForm);
+      if (edit.status) {
+        res = await axios.put("/api/grocery/category", categoryForm);
+      } else {
+        res = await axios.post("/api/grocery/category", categoryForm);
+      }
       setCategories(res.data);
       toast.success("Category added");
       setLoading(false);
-      setCategoryForm({ name: "", discount: "" });
+      setEdit({ status: false, id: "" });
+      setCategoryForm({ name: "", discount: "", id: "" });
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.msg);
@@ -77,7 +86,7 @@ function App() {
         setGroceries(res.data.groceries);
       }
       toast.success(res.data.msg);
-      setForm({ name: "", price: "", quantity: "" });
+      setForm({ name: "", price: "", quantity: "", category: "" });
       setEdit({ status: false, id: "" });
       setLoading(false);
     } catch (error) {
@@ -105,8 +114,18 @@ function App() {
     setEdit({ status: true, id: grocery._id });
     setForm({
       name: grocery.name,
-      price: grocery.price,
+      price: grocery.originalPrice,
       quantity: grocery.quantity,
+      category: grocery.category._id,
+    });
+  };
+
+  const handleEditCategory = (category) => {
+    setEdit({ status: true, id: category._id });
+    setCategoryForm({
+      name: category.name,
+      discount: category.discount,
+      id: category._id,
     });
   };
 
@@ -123,7 +142,7 @@ function App() {
       <ToastContainer position="top-center" autoClose={2000} />
       {isLoading && <Loading />}
       <h1 className="text-center text-4xl font-bold">Grocery Inventory</h1>
-      <div className="grid md:grid-cols-2 gap-x-10">
+      <div className="grid lg:grid-cols-2 gap-x-10">
         <div>
           <form
             onSubmit={handleSubmit}
@@ -244,7 +263,11 @@ function App() {
                   }
                 />
               </div>
-              <Button type="submit" label="Add Category" color="bg-green-600" />
+              <Button
+                type="submit"
+                label={`${edit.status ? "Update" : "Add"}`}
+                color="bg-green-600"
+              />
             </form>
           </div>
           <table className="w-full border whitespace-nowrap border-neutral-500 bg-text">
@@ -255,6 +278,9 @@ function App() {
                 </th>
                 <th className="font-bold text-center border-neutral-500 border-2 px-3">
                   Discount
+                </th>
+                <th className="font-bold text-center border-neutral-500 border-2 px-3">
+                  Edit
                 </th>
               </tr>
             </thead>
@@ -269,6 +295,12 @@ function App() {
                   </td>
                   <td className="px-3 border-r text-center border-neutral-500">
                     {category.discount} %
+                  </td>
+                  <td className="px-3 border-r text-center border-neutral-500">
+                    <Button
+                      label="Edit"
+                      onClick={() => handleEditCategory(category)}
+                    />
                   </td>
                 </tr>
               ))}
